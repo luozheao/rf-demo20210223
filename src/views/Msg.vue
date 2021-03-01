@@ -1,11 +1,13 @@
 <template>
   <div>
+    <List />
     <div>
       人员信息登记: 名字:<input v-model="msgObj.name" /> 年龄:<input
         v-model="msgObj.age"
       />
       性别:<input v-model="msgObj.sex" />
       <button @click="addEvent">登记</button>
+      <button @click="syncEvent">同步</button>
     </div>
 
     <Search :msgArr="msgArr" @updateMsgArr="updateMsgArr" />
@@ -33,9 +35,20 @@
 
 <script>
 import Search from '../components/Search'
+import List from '../components/List'
 export default {
   components: {
     Search,
+    List,
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler(n, o) {
+        console.log(this.$router, this.$route)
+        console.log(n, o)
+      },
+    },
   },
   data() {
     return {
@@ -64,6 +77,18 @@ export default {
     }
   },
   methods: {
+    syncEvent() {
+      let man = 0
+      let woman = 0
+      this.msgArr.forEach((item) => {
+        if (item.sex == 0) {
+          man++
+        } else {
+          woman++
+        }
+      })
+      this.$store.commit('commitArrMsg', { man, woman })
+    },
     updateMsgArr(res) {
       this.msgArr = res
     },
